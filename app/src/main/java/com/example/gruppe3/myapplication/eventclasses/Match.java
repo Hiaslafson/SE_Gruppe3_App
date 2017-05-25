@@ -6,12 +6,14 @@ package com.example.gruppe3.myapplication.eventclasses;
 
 public class Match {
 
+    private String matchId;
     private String team1;
     private String team2;
     private int res1;
     private int res2;
 
-    public Match(String team1, String team2, int res1, int res2) {
+    public Match(String matchId, String team1, String team2, int res1, int res2) {
+        this.matchId = matchId;
         this.team1 = team1;
         this.team2 = team2;
         this.res1 = res1;
@@ -49,6 +51,14 @@ public class Match {
 
     public void setRes1(int res1) {
         this.res1 = res1;
+    }
+
+    public String getMatchId() {
+        return matchId;
+    }
+
+    public void setMatchId(String matchId) {
+        this.matchId = matchId;
     }
 }
 

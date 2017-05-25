@@ -8,6 +8,7 @@ import java.util.Date;
 
 public class SportsEvent {
 
+    private String evendId;
     private String eventName;
     private String eventType;
     private String eventInfo;
@@ -15,7 +16,8 @@ public class SportsEvent {
     private Points eventPoints;
     private Matches eventMatches;
 
-    public SportsEvent(String eventName, String eventType, String eventInfo, Date eventDate, Points eventPoints, Matches eventMatches) {
+    public SportsEvent(String eventId, String eventName, String eventType, String eventInfo, Date eventDate, Points eventPoints, Matches eventMatches) {
+        this.evendId = eventId;
         this.eventName = eventName;
         this.eventType = eventType;
         this.eventInfo = eventInfo;
@@ -23,6 +25,14 @@ public class SportsEvent {
         this.eventPoints = eventPoints;
         this.eventMatches = eventMatches;
 
+    }
+
+    public String getEvendId() {
+        return evendId;
+    }
+
+    public void setEvendId(String evendId) {
+        this.evendId = evendId;
     }
 
     public String getEventName() {
