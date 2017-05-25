@@ -27,6 +27,11 @@
             android:name=".AddMatchActivity"
             android:label="Add Matches ">
         </activity>
+
+        <activity
+            android:name=".AddEventActivity"
+            android:label="Add Events ">
+        </activity>
     </application>
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>

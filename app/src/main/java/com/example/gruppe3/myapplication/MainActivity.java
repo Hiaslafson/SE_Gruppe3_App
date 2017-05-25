@@ -17,6 +17,7 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 
 import com.example.gruppe3.myapplication.eventclasses.EventList;
+import com.example.gruppe3.myapplication.eventclasses.Match;
 import com.example.gruppe3.myapplication.eventclasses.Matches;
 import com.example.gruppe3.myapplication.eventclasses.Point;
 import com.example.gruppe3.myapplication.eventclasses.Points;
@@ -97,8 +98,15 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                eventList.add("fb 3, Fußball, 13.5.2017");
-                arrayAdapter.notifyDataSetChanged();
+                try {
+                    Intent i = new Intent(MainActivity.this, AddEventActivity.class);
+                    MainActivity.this.startActivity(i);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                //TODO entfernen
+                //eventList.add("fb 3, Fußball, 13.5.2017");
+                //arrayAdapter.notifyDataSetChanged();
             }
         });
 
@@ -149,6 +157,7 @@ public class MainActivity extends AppCompatActivity {
         EventList sportsEvents = new EventList();
 
         for (int i = 0; i < jsonArray.length(); i++) {
+            String eventId = null;
             String name = null;
             String eventType = null;
             String eventInfo = null;
@@ -157,6 +166,7 @@ public class MainActivity extends AppCompatActivity {
             Matches eventMatches = new Matches();
 
             try {
+                eventId = (String) jsonArray.getJSONObject(i).get("_id");
                 name = (String) jsonArray.getJSONObject(i).get("name");
                 eventType = (String) jsonArray.getJSONObject(i).get("type");
                 eventInfo = (String) jsonArray.getJSONObject(i).get("info");
@@ -171,11 +181,26 @@ public class MainActivity extends AppCompatActivity {
                     int points = (int) pointArray.getJSONObject(j).get("points");
                     eventPoints.add(new Point(team, points));
                 }
+
+                JSONArray matchesArray = (JSONArray) jsonArray.getJSONObject(i).get("matches");
+                for (int j = 0; j < matchesArray.length(); j++) {
+                    String matchId = (String) matchesArray.getJSONObject(j).get("_id");
+                    String team1 = (String) matchesArray.getJSONObject(j).get("team1");
+                    String team2 = (String) matchesArray.getJSONObject(j).get("team2");
+                    int result1 = (int) matchesArray.getJSONObject(j).get("result1");
+                    int result2 = 0;
+
+                    if (matchesArray.getJSONObject(j).has("result2")) {
+                        result2 = (int) matchesArray.getJSONObject(j).get("result2");
+                    }
+                    eventMatches.add(new Match(matchId, team1, team2, result1, result2));
+                }
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
-            sportsEvents.add(new SportsEvent(name, eventType, eventInfo, eventDate, eventPoints, eventMatches));
+            sportsEvents.add(new SportsEvent(eventId, name, eventType, eventInfo, eventDate, eventPoints, eventMatches));
         }
         return sportsEvents;
     }

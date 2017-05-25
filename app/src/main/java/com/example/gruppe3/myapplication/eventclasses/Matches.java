@@ -24,4 +24,8 @@ public class Matches {
     public void setMatches(List<Match> matches) {
         this.matches = matches;
     }
+
+    public void add(Match match) {
+        matches.add(match);
+    }
 }

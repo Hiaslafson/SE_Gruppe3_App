@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">MTD Sports Event Application</string>
     <string name="action_settings">Settings</string>
+    <string-array name="sportTypes">
+        <item>Fußball</item>
+        <item>Skifahren</item>
+        <item>Formel1</item>
+    </string-array>
 </resources>
