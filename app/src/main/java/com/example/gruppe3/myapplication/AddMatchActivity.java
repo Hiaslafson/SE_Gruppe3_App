@@ -41,18 +41,27 @@ public class AddMatchActivity extends AppCompatActivity {
             team1 = (EditText) findViewById(R.id.editTextTeam1);
             team2 = (EditText) findViewById(R.id.editTextTeam2);
             res1 = (EditText) findViewById(R.id.editTextResult1);
-            res2 = (EditText) findViewById(R.id.editTextResult1);
+            res2 = (EditText) findViewById(R.id.editTextResult2);
 
             btOk.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Intent returnIntent = new Intent();
+                    /* TODO
                     returnIntent.putExtra("team1", team1.getText().toString());
                     returnIntent.putExtra("team2", team2.getText().toString());
                     returnIntent.putExtra("result1", res1.getText().toString());
                     returnIntent.putExtra("result2", res2.getText().toString());
-                    setResult(Activity.RESULT_OK,returnIntent);
-                    finish();
+                    */
+                    try {
+
+                        returnIntent.putExtra("match", new Match("", team1.getText().toString(), team2.getText().toString(), Integer.parseInt(res1.getText().toString()), Integer.parseInt(res2.getText().toString())));
+                        setResult(Activity.RESULT_OK, returnIntent);
+                        finish();
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
 
                 }
             });

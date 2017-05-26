@@ -105,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 //TODO entfernen
                 //eventList.add("fb 3, Fußball, 13.5.2017");
-                arrayAdapter.notifyDataSetChanged();
+                //arrayAdapter.notifyDataSetChanged();
             }
         });
 

@@ -23,7 +23,7 @@ import java.util.List;
 
 public class DetailActivity extends AppCompatActivity {
 
-    private ArrayAdapter<String> adapter;
+    private ArrayAdapter<String> arrayAdapter;
     private List<String> liste;
 
     // Create a List from String Array elements
@@ -52,7 +52,7 @@ public class DetailActivity extends AppCompatActivity {
             matchList = new ArrayList<String>(Arrays.asList(matches));
 
             // Create an ArrayAdapter from List
-            final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>
+            arrayAdapter = new ArrayAdapter<String>
                     (this, android.R.layout.simple_list_item_1, matchList);
 
             // DataBind ListView with items from ArrayAdapter
@@ -126,9 +126,9 @@ public class DetailActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void setListAdapter(ArrayAdapter<String> listAdapter) {
-        this.adapter = listAdapter;
-    }
+    //public void setListAdapter(ArrayAdapter<String> listAdapter) {
+     //   this.adapter = listAdapter;
+    //}
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -136,16 +136,11 @@ public class DetailActivity extends AppCompatActivity {
         if (requestCode == 1) {
             if(resultCode == Activity.RESULT_OK){
                 try {
-                    String team1 = data.getStringExtra("team1");
-                    String team2 = data.getStringExtra("team2");
-                    String res1 = data.getStringExtra("result1");
-                    String res2 = data.getStringExtra("result2");
-                    int res1Int = Integer.parseInt(res1);
-                    int res2Int = Integer.parseInt(res2);
-                    matches.add(new Match("", team1, team2, res1Int, res2Int));
+                    Match m = (Match) data.getParcelableExtra("match");
+                    matches.add(m);
+                    matchList.add(m.getTeam1() + " vs. " + m.getTeam2() + ", Ergebnis: " + m.getRes1() + " : " + m.getRes2());
 
-                    matchList.add("Team 1: " + team1 + ", Team2: " + team2 + " " + res1 + " : " + res2);
-                    //arrayAdapter.notifyDataSetChanged();
+                    arrayAdapter.notifyDataSetChanged();
                 } catch (Exception e ) {
                     e.printStackTrace();
                 }

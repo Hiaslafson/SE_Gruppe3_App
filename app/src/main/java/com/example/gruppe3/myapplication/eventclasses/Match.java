@@ -1,10 +1,13 @@
 package com.example.gruppe3.myapplication.eventclasses;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Created by Tom on 25.05.2017.
  */
 
-public class Match {
+public class Match implements Parcelable {
 
     private String matchId;
     private String team1;
@@ -59,6 +62,41 @@ public class Match {
 
     public void setMatchId(String matchId) {
         this.matchId = matchId;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    // write your object's data to the passed-in Parcel
+    @Override
+    public void writeToParcel(Parcel out, int flags) {
+        out.writeString(matchId);
+        out.writeString(team1);
+        out.writeString(team2);
+        out.writeInt(res1);
+        out.writeInt(res2);
+    }
+
+    // this is used to regenerate your object. All Parcelables must have a CREATOR that implements these two methods
+    public static final Parcelable.Creator<Match> CREATOR = new Parcelable.Creator<Match>() {
+        public Match createFromParcel(Parcel in) {
+            return new Match(in);
+        }
+
+        public Match[] newArray(int size) {
+            return new Match[size];
+        }
+    };
+
+    // example constructor that takes a Parcel and gives you an object populated with it's values
+    private Match(Parcel in) {
+        matchId = in.readString();
+        team1 = in.readString();
+        team2 = in.readString();
+        res1 = in.readInt();
+        res2 = in.readInt();
     }
 }
 
