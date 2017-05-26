@@ -1,5 +1,6 @@
 package com.example.gruppe3.myapplication;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -64,8 +65,6 @@ public class MainActivity extends AppCompatActivity {
             result = getRequest.execute(myUrl).get();
             events = jsonStringToEventList(result);
 
-            //TODO anbindung der events in die view
-
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
@@ -106,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 //TODO entfernen
                 //eventList.add("fb 3, Fußball, 13.5.2017");
-                //arrayAdapter.notifyDataSetChanged();
+                arrayAdapter.notifyDataSetChanged();
             }
         });
 
@@ -204,5 +203,24 @@ public class MainActivity extends AppCompatActivity {
         }
         return sportsEvents;
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == 1) {
+            if(resultCode == Activity.RESULT_OK){
+                String team1 = data.getStringExtra("team1");
+                String team2 = data.getStringExtra("team2");
+                String res1 = data.getStringExtra("result1");
+                String res2 = data.getStringExtra("result2");
+                int res1Int = Integer.parseInt(res1);
+                int res2Int = Integer.parseInt(res2);
+                new Match("", team1, team2, res1Int, res2Int);
+            }
+            if (resultCode == Activity.RESULT_CANCELED) {
+                //Write your code if there's no result
+            }
+        }
+    }//onActivityResult
 
 }

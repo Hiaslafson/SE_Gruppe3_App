@@ -14,6 +14,9 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.example.gruppe3.myapplication.eventclasses.Match;
+import com.example.gruppe3.myapplication.eventclasses.Matches;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -23,55 +26,82 @@ public class DetailActivity extends AppCompatActivity {
     private ArrayAdapter<String> adapter;
     private List<String> liste;
 
+    // Create a List from String Array elements
+    private List<String> matchList;
+    private Matches matches = new Matches();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_details);
-        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar2);
-        //setSupportActionBar(toolbar);
 
-        // Get reference of widgets from XML layout
-        final ListView lv = (ListView) findViewById(R.id.lv_matches);
+        try {
+            super.onCreate(savedInstanceState);
+            setContentView(R.layout.activity_details);
+            //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar2);
+            //setSupportActionBar(toolbar);
 
-        // Initializing a new String Array
-        String[] events = new String[] {
-                "Match 1",
-                "Match 2",
-        };
+            // Get reference of widgets from XML layout
+            final ListView lv = (ListView) findViewById(R.id.lv_matches);
 
-        // Create a List from String Array elements
-        final List<String> eventList = new ArrayList<String>(Arrays.asList(events));
+            // Initializing a new String Array
+            String[] matches = new String[]{
+                    "Match 1",
+                    "Match 2",
+            };
 
-        // Create an ArrayAdapter from List
-        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>
-                (this, android.R.layout.simple_list_item_1, eventList);
+            // Create a List from String Array elements
+            matchList = new ArrayList<String>(Arrays.asList(matches));
 
-        // DataBind ListView with items from ArrayAdapter
-        lv.setAdapter(arrayAdapter);
+            // Create an ArrayAdapter from List
+            final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>
+                    (this, android.R.layout.simple_list_item_1, matchList);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab2);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+            // DataBind ListView with items from ArrayAdapter
+            lv.setAdapter(arrayAdapter);
 
-                try {
-                    Intent i = new Intent(DetailActivity.this, AddMatchActivity.class);
-                    DetailActivity.this.startActivityForResult(i, 1);
-                } catch (Exception e) {
-                    e.printStackTrace();
+            FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab2);
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    try {
+                        Intent i = new Intent(DetailActivity.this, AddMatchActivity.class);
+                        DetailActivity.this.startActivityForResult(i, 1);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
-            }
-        });
+            });
 
-        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            FloatingActionButton fabSave = (FloatingActionButton) findViewById(R.id.fabSave);
+            fabSave.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
 
-            @Override
-            public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
+                    try {
+                        Intent returnIntent = new Intent();
+                        returnIntent.putExtra("team1", "test");
+                        setResult(Activity.RESULT_OK,returnIntent);
+                        finish();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
 
 
 
-            }
-        });
+            lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+                @Override
+                public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
+
+
+                }
+            });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -105,7 +135,20 @@ public class DetailActivity extends AppCompatActivity {
 
         if (requestCode == 1) {
             if(resultCode == Activity.RESULT_OK){
-                String result=data.getStringExtra("result");
+                try {
+                    String team1 = data.getStringExtra("team1");
+                    String team2 = data.getStringExtra("team2");
+                    String res1 = data.getStringExtra("result1");
+                    String res2 = data.getStringExtra("result2");
+                    int res1Int = Integer.parseInt(res1);
+                    int res2Int = Integer.parseInt(res2);
+                    matches.add(new Match("", team1, team2, res1Int, res2Int));
+
+                    matchList.add("Team 1: " + team1 + ", Team2: " + team2 + " " + res1 + " : " + res2);
+                    //arrayAdapter.notifyDataSetChanged();
+                } catch (Exception e ) {
+                    e.printStackTrace();
+                }
             }
             if (resultCode == Activity.RESULT_CANCELED) {
                 //Write your code if there's no result
