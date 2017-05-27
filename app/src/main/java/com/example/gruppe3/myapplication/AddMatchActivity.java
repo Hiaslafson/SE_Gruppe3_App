@@ -3,6 +3,7 @@ package com.example.gruppe3.myapplication;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -16,6 +17,8 @@ import android.widget.TextView;
 import com.example.gruppe3.myapplication.eventclasses.Match;
 
 import java.util.List;
+
+import static com.example.gruppe3.myapplication.eventclasses.InOut.printTextSnackbar;
 
 /**
  * Created by Tom on 25.05.2017.
@@ -47,12 +50,6 @@ public class AddMatchActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     Intent returnIntent = new Intent();
-                    /* TODO
-                    returnIntent.putExtra("team1", team1.getText().toString());
-                    returnIntent.putExtra("team2", team2.getText().toString());
-                    returnIntent.putExtra("result1", res1.getText().toString());
-                    returnIntent.putExtra("result2", res2.getText().toString());
-                    */
                     try {
 
                         returnIntent.putExtra("match", new Match("", team1.getText().toString(), team2.getText().toString(), Integer.parseInt(res1.getText().toString()), Integer.parseInt(res2.getText().toString())));
@@ -61,6 +58,8 @@ public class AddMatchActivity extends AppCompatActivity {
 
                     } catch (Exception e) {
                         e.printStackTrace();
+                        CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
+                        printTextSnackbar(coordinatorLayout, "Error: " + e.getMessage());
                     }
 
                 }

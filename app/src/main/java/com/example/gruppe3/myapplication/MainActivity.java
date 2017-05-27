@@ -3,6 +3,7 @@ package com.example.gruppe3.myapplication;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -34,10 +35,15 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import static com.example.gruppe3.myapplication.eventclasses.InOut.getDateFormat;
+import static com.example.gruppe3.myapplication.eventclasses.InOut.printTextSnackbar;
+
 public class MainActivity extends AppCompatActivity {
 
-    private ArrayAdapter<String> adapter;
+    ArrayAdapter<String> arrayAdapter;
     private List<String> liste;
+
+    List<String> eventList;
 
     private EventList events = null;
 
@@ -52,8 +58,6 @@ public class MainActivity extends AppCompatActivity {
         //Some url endpoint that you may have
         //String myUrl = "http://10.0.0.28:3000/events";
         String myUrl = "http://192.168.0.2:3000/events";
-
-        //String to place our result in
         String result;
         //Instantiate new instance of our class
         GetJson getRequest = new GetJson();
@@ -65,28 +69,24 @@ public class MainActivity extends AppCompatActivity {
             result = getRequest.execute(myUrl).get();
             events = jsonStringToEventList(result);
 
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
+            CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
+            printTextSnackbar(coordinatorLayout, "Error: " + e.getMessage());
         }
 
         // Get reference of widgets from XML layout
         final ListView lv = (ListView) findViewById(R.id.lv);
 
         // Create a List from String Array elements
-        final List<String> eventList = new ArrayList<String>();
+        eventList = new ArrayList<String>();
 
         for (int e = 0; e < events.getSportsEventList().size(); e++) {
             eventList.add("Event: " + events.getSportsEventList().get(e).getEventName() + ", Typ: " + events.getSportsEventList().get(e).getEventType() + ", Info: " + events.getSportsEventList().get(e).getEventInfo());
         }
 
         // Create an ArrayAdapter from List
-        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>
+        arrayAdapter = new ArrayAdapter<String>
                 (this, android.R.layout.simple_list_item_1, eventList);
 
         // DataBind ListView with items from ArrayAdapter
@@ -99,9 +99,12 @@ public class MainActivity extends AppCompatActivity {
 
                 try {
                     Intent i = new Intent(MainActivity.this, AddEventActivity.class);
-                    MainActivity.this.startActivity(i);
+                    MainActivity.this.startActivityForResult(i, 1);
                 } catch (Exception e) {
                     e.printStackTrace();
+
+                    CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
+                    printTextSnackbar(coordinatorLayout, "Error: " + e.getMessage());
                 }
                 //TODO entfernen
                 //eventList.add("fb 3, Fußball, 13.5.2017");
@@ -116,8 +119,9 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
 
                 Object o = lv.getItemAtPosition(position);
-
                 Intent i = new Intent(MainActivity.this,DetailActivity.class);
+                i.putExtra("id", events.getSportsEventList().get(position).getEvendId());
+                //i.putExtra("o", o.);
                 MainActivity.this.startActivity(i);
 
             }
@@ -146,10 +150,6 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void setListAdapter(ArrayAdapter<String> listAdapter) {
-        this.adapter = listAdapter;
-    }
-
     public EventList jsonStringToEventList(String jsonString) throws JSONException {
 
         JSONArray jsonArray = new JSONArray(jsonString);
@@ -171,8 +171,8 @@ public class MainActivity extends AppCompatActivity {
                 eventInfo = (String) jsonArray.getJSONObject(i).get("info");
                 String dateStr = (String) jsonArray.getJSONObject(i).get("eventDate");
 
-                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
-                eventDate = dateFormat.parse(dateStr);
+
+                eventDate = getDateFormat().parse(dateStr);
 
                 JSONArray pointArray = (JSONArray) jsonArray.getJSONObject(i).get("points");
                 for (int j = 0; j < pointArray.length(); j++) {
@@ -197,6 +197,8 @@ public class MainActivity extends AppCompatActivity {
 
             } catch (Exception e) {
                 e.printStackTrace();
+                CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
+                printTextSnackbar(coordinatorLayout, "Error: " + e.getMessage());
             }
 
             sportsEvents.add(new SportsEvent(eventId, name, eventType, eventInfo, eventDate, eventPoints, eventMatches));
@@ -209,13 +211,19 @@ public class MainActivity extends AppCompatActivity {
 
         if (requestCode == 1) {
             if(resultCode == Activity.RESULT_OK){
-                String team1 = data.getStringExtra("team1");
-                String team2 = data.getStringExtra("team2");
-                String res1 = data.getStringExtra("result1");
-                String res2 = data.getStringExtra("result2");
-                int res1Int = Integer.parseInt(res1);
-                int res2Int = Integer.parseInt(res2);
-                new Match("", team1, team2, res1Int, res2Int);
+                try {
+                    SportsEvent ev =  data.getParcelableExtra("event");
+                    events.add(ev);
+                    eventList.add("Event: " + ev.getEventName() + ", Typ: " + ev.getEventType() + ", Info: " + ev.getEventInfo());
+
+                    //TODO save match to DB
+
+                    arrayAdapter.notifyDataSetChanged();
+                } catch (Exception e ) {
+                    e.printStackTrace();
+                    CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
+                    printTextSnackbar(coordinatorLayout, "Error: " + e.getMessage());
+                }
             }
             if (resultCode == Activity.RESULT_CANCELED) {
                 //Write your code if there's no result
