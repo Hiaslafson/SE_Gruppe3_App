@@ -23,6 +23,14 @@ public class Match implements Parcelable {
         this.res2 = res2;
     }
 
+    public Match(String matchId, String team1, String team2, int res1) {
+        this.matchId = matchId;
+        this.team1 = team1;
+        this.team2 = team2;
+        this.res1 = res1;
+        this.res2 = 0;
+    }
+
     public int getRes2() {
         return res2;
     }

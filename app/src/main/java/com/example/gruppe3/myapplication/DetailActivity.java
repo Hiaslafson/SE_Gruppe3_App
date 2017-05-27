@@ -86,7 +86,12 @@ public class DetailActivity extends AppCompatActivity {
             matchList = new ArrayList<String>();
 
             for (Match m : event.getEventMatches().getMatches()) {
-                matchList.add(m.getTeam1() + " vs. " + m.getTeam2() + ", Ergebnis: " + m.getRes1() + " : " + m.getRes2());
+                if (event.getEventType().contains("Fußball")) {
+                    matchList.add(m.getTeam1() + " vs. " + m.getTeam2() + ", Ergebnis: " + m.getRes1() + " : " + m.getRes2());
+                }
+                else {
+                    matchList.add("Fahrer: " + m.getTeam1() + ", Startnummer: " + m.getRes1() + " Fahrzeit: " +  " : " + m.getTeam2());
+                }
                 matches.add(m);
             }
 
@@ -103,7 +108,13 @@ public class DetailActivity extends AppCompatActivity {
                 public void onClick(View view) {
 
                     try {
-                        Intent i = new Intent(DetailActivity.this, AddMatchActivity.class);
+                        Intent i = null;
+                        if (event.getEventType().contains("Fußball")) {
+                            i = new Intent(DetailActivity.this, AddMatchActivity.class);
+                        } else {
+                            i = new Intent(DetailActivity.this, AddDriverActivity.class);
+                        }
+
                         DetailActivity.this.startActivityForResult(i, 1);
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -120,7 +131,6 @@ public class DetailActivity extends AppCompatActivity {
 
                     try {
                         Intent returnIntent = new Intent();
-                        returnIntent.putExtra("team1", "test");
                         setResult(Activity.RESULT_OK,returnIntent);
                         finish();
                     } catch (Exception e) {
@@ -203,7 +213,13 @@ public class DetailActivity extends AppCompatActivity {
                 try {
                     Match m = (Match) data.getParcelableExtra("match");
                     matches.add(m);
-                    matchList.add(m.getTeam1() + " vs. " + m.getTeam2() + ", Ergebnis: " + m.getRes1() + " : " + m.getRes2());
+
+                    if (event.getEventType().contains("Fußball")){
+                        matchList.add(m.getTeam1() + " vs. " + m.getTeam2() + ", Ergebnis: " + m.getRes1() + " : " + m.getRes2());
+                    }
+                    else {
+                        matchList.add("Fahrer: " + m.getTeam1() + ", Startnummer: " + m.getRes1() + " Fahrzeit: " +  " : " + m.getTeam2());
+                    }
 
                     //TODO add match to DB
 

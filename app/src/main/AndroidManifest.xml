@@ -32,6 +32,11 @@
             android:name=".AddEventActivity"
             android:label="Add Events ">
         </activity>
+
+        <activity
+            android:name=".AddDriverActivity"
+            android:label="Add Drivers ">
+        </activity>
     </application>
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
