@@ -1,6 +1,8 @@
 package com.example.gruppe3.myapplication;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
@@ -8,6 +10,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -42,9 +45,8 @@ public class MainActivity extends AppCompatActivity {
 
     ArrayAdapter<String> arrayAdapter;
     private List<String> liste;
-
-    List<String> eventList;
-
+    private List<String> eventList;
+    private Activity a = this;
     private EventList events = null;
 
     @Override
@@ -124,6 +126,34 @@ public class MainActivity extends AppCompatActivity {
                 //i.putExtra("o", o.);
                 MainActivity.this.startActivity(i);
 
+            }
+        });
+
+        lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
+                                           int pos, long id) {
+                String eventId = events.getSportsEventList().get(pos).getEvendId();
+                System.out.print(eventId);
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(a);
+                builder.setMessage("Do you want to delete this Event?")
+                        .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                // Handle Ok
+                                System.out.print("delete");
+                                //TODO delete event
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                // Handle Cancel
+                                System.out.print("Cancel");
+                            }
+                        })
+                        .create();
+                builder.show();
+                return true;
             }
         });
     }
@@ -216,7 +246,7 @@ public class MainActivity extends AppCompatActivity {
                     events.add(ev);
                     eventList.add("Event: " + ev.getEventName() + ", Typ: " + ev.getEventType() + ", Info: " + ev.getEventInfo());
 
-                    //TODO save match to DB
+                    //TODO add event to DB
 
                     arrayAdapter.notifyDataSetChanged();
                 } catch (Exception e ) {

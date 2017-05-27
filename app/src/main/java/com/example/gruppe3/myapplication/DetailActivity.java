@@ -1,6 +1,8 @@
 package com.example.gruppe3.myapplication;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
@@ -33,10 +35,10 @@ public class DetailActivity extends AppCompatActivity {
     private List<String> liste;
 
     // Create a List from String Array elements
-    private List<String> matchList;
+    private List<String> matchList = new ArrayList<>();
     private Matches matches = new Matches();
-
-    private SportsEvent event; //TODO only temp
+    private Activity a = this;
+    private SportsEvent event = new SportsEvent(); //TODO only temp
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +75,7 @@ public class DetailActivity extends AppCompatActivity {
                 CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
                 printTextSnackbar(coordinatorLayout, "Error: " + e.getMessage());
             }
+
 
             //------------------------------
 
@@ -139,15 +142,23 @@ public class DetailActivity extends AppCompatActivity {
                     String mid = matches.getMatches().get(position).getMatchId();
                     System.out.print(mid);
 
-                    
-
-                    /*
-                    Intent i = new Intent(MainActivity.this,DetailActivity.class);
-                    i.putExtra("id", events.getSportsEventList().get(position).getEvendId());
-                    //i.putExtra("o", o.);
-                    MainActivity.this.startActivity(i);
-                    */
-
+                    AlertDialog.Builder builder = new AlertDialog.Builder(a);
+                    builder.setMessage("Do you want to delete this match?")
+                            .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    // Handle Ok
+                                    System.out.print("delete");
+                                    //TODO delete match
+                                }
+                            })
+                            .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    // Handle Cancel
+                                    System.out.print("Cancel");
+                                }
+                            })
+                            .create();
+                    builder.show();
                 }
             });
 
@@ -194,7 +205,7 @@ public class DetailActivity extends AppCompatActivity {
                     matches.add(m);
                     matchList.add(m.getTeam1() + " vs. " + m.getTeam2() + ", Ergebnis: " + m.getRes1() + " : " + m.getRes2());
 
-                    //TODO save match to DB
+                    //TODO add match to DB
 
                     arrayAdapter.notifyDataSetChanged();
                 } catch (Exception e ) {

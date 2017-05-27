@@ -48,6 +48,12 @@ public class SportsEvent implements Parcelable {
 
     }
 
+    public SportsEvent() {
+        //TODO only for testing
+        this.eventPoints = new Points();
+        this.eventMatches = new Matches();
+    }
+
     public String getEvendId() {
         return evendId;
     }
