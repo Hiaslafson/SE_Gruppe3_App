@@ -3,16 +3,23 @@ package com.example.gruppe3.myapplication.eventclasses;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+
 /**
  * Created by Tom on 25.05.2017.
  */
 
 public class Match implements Parcelable {
 
+    @JsonProperty("_id")
     private String matchId;
+    @JsonProperty("team1")
     private String team1;
+    @JsonProperty("team2")
     private String team2;
+    @JsonProperty("result1")
     private int res1;
+    @JsonProperty("result2")
     private int res2;
 
     public Match(String matchId, String team1, String team2, int res1, int res2) {

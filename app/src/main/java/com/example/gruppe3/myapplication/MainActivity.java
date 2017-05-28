@@ -28,8 +28,11 @@ import com.example.gruppe3.myapplication.eventclasses.Point;
 import com.example.gruppe3.myapplication.eventclasses.Points;
 import com.example.gruppe3.myapplication.eventclasses.SportsEvent;
 
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.ObjectWriter;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -58,16 +61,16 @@ public class MainActivity extends AppCompatActivity {
 
         String params =  "";
         //Some url endpoint that you may have
-        //String myUrl = "http://10.0.0.28:3000/events";
-        String myUrl = "http://192.168.0.2:3000/events";
+        String myUrl = "http://10.0.0.28:3000/events";
+        //String myUrl = "http://192.168.0.2:3000/events";
         String result;
         //Instantiate new instance of our class
         GetJson getRequest = new GetJson();
+        PostJson postEvent = new PostJson();
         //Perform the doInBackground method, passing in our url
 
-        events = new EventList();
-
         try {
+
             result = getRequest.execute(myUrl).get();
             events = jsonStringToEventList(result);
 
@@ -246,7 +249,19 @@ public class MainActivity extends AppCompatActivity {
                     events.add(ev);
                     eventList.add("Event: " + ev.getEventName() + ", Typ: " + ev.getEventType() + ", Info: " + ev.getEventInfo());
 
-                    //TODO add event to DB
+                    ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+
+                    String json = ow.writeValueAsString(ev);
+                    PostJson post = new PostJson();
+                    try {
+                        String result;
+                        result = post.execute(json).get();
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
+                        printTextSnackbar(coordinatorLayout, "Error: " + e.getMessage());
+                    }
 
                     arrayAdapter.notifyDataSetChanged();
                 } catch (Exception e ) {

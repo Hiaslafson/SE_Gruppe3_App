@@ -3,6 +3,9 @@ package com.example.gruppe3.myapplication.eventclasses;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonProperty;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -17,12 +20,19 @@ import static com.example.gruppe3.myapplication.eventclasses.InOut.getDateFormat
 
 public class SportsEvent implements Parcelable {
 
+    @JsonIgnore
     private String evendId;
+    @JsonProperty("name")
     private String eventName;
+    @JsonProperty("type")
     private String eventType;
+    @JsonProperty("info")
     private String eventInfo;
+    @JsonProperty("eventDate")
     private Date eventDate;
+    @JsonProperty("points")
     private Points eventPoints;
+    @JsonProperty("matches")
     private Matches eventMatches;
     private static int id = 0;
 
