@@ -42,7 +42,9 @@ public class DetailActivity extends AppCompatActivity {
     private List<String> matchList = new ArrayList<>();
     private Matches matches = new Matches();
     private Activity a = this;
-    private SportsEvent event = new SportsEvent(); //TODO only temp
+    private SportsEvent event = new SportsEvent();
+    private String myUrl =  myIP + "/events";
+    private String value = ""; // event id value
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,38 +52,6 @@ public class DetailActivity extends AppCompatActivity {
         try {
             super.onCreate(savedInstanceState);
             setContentView(R.layout.activity_details);
-            //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar2);
-            //setSupportActionBar(toolbar);
-
-            Bundle b = getIntent().getExtras();
-            String value = ""; // or other values
-            if(b != null)
-                value = b.getString("id");
-
-            //TODO liest es nochmals aus, ev mitgeben ------------------------------
-            String myUrl =  myIP + "/events";
-            String result;
-            //Instantiate new instance of our class
-            GetJson getRequest = new GetJson();
-            try {
-                result = getRequest.execute(myUrl).get();
-                EventList events = jsonStringToEventList(result);
-
-                for (SportsEvent e : events.getSportsEventList()) {
-                    if (e.getEvendId().equalsIgnoreCase(value)) {
-                        event = e;
-                        break;
-                    }
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
-                printTextSnackbar(coordinatorLayout, "Error: " + e.getMessage());
-            }
-
-
-            //------------------------------
 
             // Get reference of widgets from XML layout
             final ListView lv = (ListView) findViewById(R.id.lv_matches);
@@ -89,15 +59,13 @@ public class DetailActivity extends AppCompatActivity {
             // Create a List from String Array elements
             matchList = new ArrayList<String>();
 
-            for (Match m : event.getEventMatches().getMatches()) {
-                if (event.getEventType().contains("Fußball")) {
-                    matchList.add(m.getTeam1() + " vs. " + m.getTeam2() + ", Ergebnis: " + m.getRes1() + " : " + m.getRes2());
-                }
-                else {
-                    matchList.add("Fahrer: " + m.getTeam1() + ", Startnummer: " + m.getRes1() + " Fahrzeit: " +  " : " + m.getTeam2());
-                }
-                matches.add(m);
-            }
+            Bundle b = getIntent().getExtras();
+            value = ""; // or other values
+            if(b != null)
+                value = b.getString("id");
+
+
+            GetDetails();
 
             // Create an ArrayAdapter from List
             arrayAdapter = new ArrayAdapter<String>
@@ -181,17 +149,13 @@ public class DetailActivity extends AppCompatActivity {
                                     try {
                                         String result;
                                         result = post.execute(stringUrl, message).get();
+                                        GetDetails();
 
                                     } catch (Exception e) {
                                         e.printStackTrace();
                                         CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
                                         printTextSnackbar(coordinatorLayout, "Error: " + e.getMessage());
                                     }
-
-
-
-
-
                                 }
                             })
                             .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -209,6 +173,47 @@ public class DetailActivity extends AppCompatActivity {
             e.printStackTrace();
             CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
             printTextSnackbar(coordinatorLayout, "Error: " + e.getMessage());
+        }
+    }
+
+    private void GetDetails() {
+        String result;
+        //Instantiate new instance of our class
+        GetJson getRequest = new GetJson();
+        try {
+            result = getRequest.execute(myUrl).get();
+            EventList events = jsonStringToEventList(result);
+
+            for (SportsEvent e : events.getSportsEventList()) {
+                if (e.getEvendId().equalsIgnoreCase(value)) {
+                    event = e;
+                    break;
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
+            printTextSnackbar(coordinatorLayout, "Error: " + e.getMessage());
+        }
+
+        //------------------------------
+        matchList.clear();
+
+        for (Match m : event.getEventMatches().getMatches()) {
+            if (event.getEventType().contains("Fußball")) {
+                matchList.add(m.getTeam1() + " vs. " + m.getTeam2() + ", Ergebnis: " + m.getRes1() + " : " + m.getRes2());
+            }
+            else {
+                matchList.add("Fahrer: " + m.getTeam1() + ", Startnummer: " + m.getRes1() + " Fahrzeit: " +  " : " + m.getTeam2());
+            }
+            matches.add(m);
+        }
+
+        try {
+            arrayAdapter.notifyDataSetChanged();
+        } catch (Exception e) {
+            //Nothing to do
         }
     }
 
@@ -233,10 +238,6 @@ public class DetailActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
-
-    //public void setListAdapter(ArrayAdapter<String> listAdapter) {
-     //   this.adapter = listAdapter;
-    //}
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -272,14 +273,13 @@ public class DetailActivity extends AppCompatActivity {
                     try {
                         String result;
                         result = post.execute(stringUrl, message).get();
+                        GetDetails();
 
                     } catch (Exception e) {
                         e.printStackTrace();
                         CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
                         printTextSnackbar(coordinatorLayout, "Error: " + e.getMessage());
                     }
-
-
 
                     arrayAdapter.notifyDataSetChanged();
                 } catch (Exception e ) {
