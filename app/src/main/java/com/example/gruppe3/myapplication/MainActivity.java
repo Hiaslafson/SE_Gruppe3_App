@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
     private List<String> eventList;
     private Activity a = this;
     private EventList events = null;
+    public static String myIP ="http://10.0.0.28:3000";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
 
         String params =  "";
         //Some url endpoint that you may have
-        String myUrl = "http://10.0.0.28:3000/events";
+        String myUrl = myIP +"/events";
         //String myUrl = "http://192.168.0.2:3000/events";
         String result;
         //Instantiate new instance of our class
@@ -136,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
                                            int pos, long id) {
-                String eventId = events.getSportsEventList().get(pos).getEvendId();
+                final String eventId = events.getSportsEventList().get(pos).getEvendId();
                 System.out.print(eventId);
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(a);
@@ -145,7 +146,27 @@ public class MainActivity extends AppCompatActivity {
                             public void onClick(DialogInterface dialog, int id) {
                                 // Handle Ok
                                 System.out.print("delete");
-                                //TODO delete event
+
+                                DeleteJson delete = new DeleteJson();
+                                String stringUrl =  myIP +"/events/" + eventId;
+                                try {
+                                    String result;
+                                    result = delete.execute(stringUrl).get();
+
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                    CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
+                                    printTextSnackbar(coordinatorLayout, "Error: " + e.getMessage());
+                                }
+
+
+
+
+
+
+
+
+
                             }
                         })
                         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -249,13 +270,25 @@ public class MainActivity extends AppCompatActivity {
                     events.add(ev);
                     eventList.add("Event: " + ev.getEventName() + ", Typ: " + ev.getEventType() + ", Info: " + ev.getEventInfo());
 
-                    ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
 
-                    String json = ow.writeValueAsString(ev);
+
+                    JSONObject object = new JSONObject();
+                    try {
+                        object.put("name", ev.getEventName());
+                        object.put("info", ev.getEventInfo());
+                        object.put("type", ev.getEventType());
+                        object.put("eventDate", ev.getEventDate());
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                   String message = object.toString();
                     PostJson post = new PostJson();
+                    String stringUrl =  myIP +"/events";
                     try {
                         String result;
-                        result = post.execute(json).get();
+                        result = post.execute(stringUrl, message).get();
 
                     } catch (Exception e) {
                         e.printStackTrace();
