@@ -1,4 +1,4 @@
-package com.example.gruppe3.myapplication;
+package com.example.gruppe3.myapplication.ActivityController;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -7,20 +7,19 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
-import android.widget.TableLayout;
-import android.widget.TableRow;
 
+import com.example.gruppe3.myapplication.Requests.DeleteJson;
+import com.example.gruppe3.myapplication.Requests.GetJson;
+import com.example.gruppe3.myapplication.Requests.PostJson;
+import com.example.gruppe3.myapplication.R;
 import com.example.gruppe3.myapplication.eventclasses.EventList;
 import com.example.gruppe3.myapplication.eventclasses.Match;
 import com.example.gruppe3.myapplication.eventclasses.Matches;
@@ -28,18 +27,13 @@ import com.example.gruppe3.myapplication.eventclasses.Point;
 import com.example.gruppe3.myapplication.eventclasses.Points;
 import com.example.gruppe3.myapplication.eventclasses.SportsEvent;
 
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.ObjectWriter;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import static com.example.gruppe3.myapplication.eventclasses.InOut.getDateFormat;
 import static com.example.gruppe3.myapplication.eventclasses.InOut.printTextSnackbar;
@@ -51,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
     private List<String> eventList;
     private Activity a = this;
     private EventList events = null;
-    public static String myIP ="http://192.168.0.103:3000";
+    public static String myIP ="http://192.168.0.6:3000";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,10 +59,6 @@ public class MainActivity extends AppCompatActivity {
 
         // Create a List from String Array elements
         eventList = new ArrayList<String>();
-        String params =  "";
-        //Some url endpoint that you may have
-        String myUrl = myIP +"/events";
-        //String myUrl = "http://192.168.0.2:3000/events";
 
         GetEvents();
 
@@ -101,11 +91,8 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-
-                Object o = lv.getItemAtPosition(position);
                 Intent i = new Intent(MainActivity.this,DetailActivity.class);
                 i.putExtra("id", events.getSportsEventList().get(position).getEvendId());
-                //i.putExtra("o", o.);
                 MainActivity.this.startActivity(i);
 
             }
@@ -290,17 +277,19 @@ public class MainActivity extends AppCompatActivity {
             result = getRequest.execute(myUrl).get();
             events = jsonStringToEventList(result);
 
+            // clear list before refresh
+            eventList.clear();
+
+            for (int e = 0; e < events.getSportsEventList().size(); e++) {
+                eventList.add("Event: " + events.getSportsEventList().get(e).getEventName() + ", Typ: "
+                        + events.getSportsEventList().get(e).getEventType()
+                        + ", Info: " + events.getSportsEventList().get(e).getEventInfo());
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
             CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
-            printTextSnackbar(coordinatorLayout, "Error: " + e.getMessage());
-        }
-
-        // Create a List from String Array elements
-        eventList.clear();
-
-        for (int e = 0; e < events.getSportsEventList().size(); e++) {
-            eventList.add("Event: " + events.getSportsEventList().get(e).getEventName() + ", Typ: " + events.getSportsEventList().get(e).getEventType() + ", Info: " + events.getSportsEventList().get(e).getEventInfo());
+            printTextSnackbar(coordinatorLayout, "Error: Could not load Events from Database: " + e.getMessage());
         }
 
         try {

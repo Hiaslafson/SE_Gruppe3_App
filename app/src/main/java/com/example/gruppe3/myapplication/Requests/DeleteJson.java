@@ -1,35 +1,51 @@
-package com.example.gruppe3.myapplication;
+package com.example.gruppe3.myapplication.Requests;
 
 /**
- * Created by MatthiasW on 23.05.2017.
+ * Created by MatthiasW on 03.06.2017.
  */
 
 import android.os.AsyncTask;
-import android.util.Log;
 
-import org.apache.http.HttpEntity;
+import org.json.JSONObject;
+
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
+import android.os.AsyncTask;
+
+import com.example.gruppe3.myapplication.eventclasses.SportsEvent;
+
 import org.apache.http.HttpResponse;
-import org.apache.http.StatusLine;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Map;
 
+/**
+ * Created by MatthiasW on 28.05.2017.
+ */
 
-public class GetJson extends AsyncTask<String,Void, String> {
+public class DeleteJson extends AsyncTask<String,Void, String> {
 
-
-    public static final String REQUEST_METHOD = "GET";
+    public static final String REQUEST_METHOD = "DELETE";
     public static final int READ_TIMEOUT = 15000;
     public static final int CONNECTION_TIMEOUT = 15000;
 
@@ -38,11 +54,14 @@ public class GetJson extends AsyncTask<String,Void, String> {
     protected void onPostExecute(String result){
         super.onPostExecute(result);
     }
+
     @Override
     protected String doInBackground(String... params) {
         String stringUrl = params[0];
+        // String s = params[1];
         String result;
         String inputLine;
+
         try {
             //Create a URL object holding our url
             URL myUrl = new URL(stringUrl);
@@ -78,7 +97,8 @@ public class GetJson extends AsyncTask<String,Void, String> {
             e.printStackTrace();
             result = null;
         }
-        return result;
+        return "Test";
 
     }
+
 }

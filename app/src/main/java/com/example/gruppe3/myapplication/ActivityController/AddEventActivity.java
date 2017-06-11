@@ -1,4 +1,4 @@
-package com.example.gruppe3.myapplication;
+package com.example.gruppe3.myapplication.ActivityController;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -12,6 +12,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import com.example.gruppe3.myapplication.R;
 import com.example.gruppe3.myapplication.eventclasses.Match;
 import com.example.gruppe3.myapplication.eventclasses.SportsEvent;
 
@@ -52,7 +53,8 @@ public class AddEventActivity extends Activity {
 
                 try {
                     Date date = getDateFromDatePicket(datePicker);
-                    SportsEvent se = new SportsEvent(editTextEventName.getText().toString(), spinnerType.getSelectedItem().toString(), editTextInfo.getText().toString(), date);
+                    SportsEvent se = new SportsEvent(editTextEventName.getText().toString(),
+                            spinnerType.getSelectedItem().toString(), editTextInfo.getText().toString(), date);
                     returnIntent.putExtra("event", se);
                     setResult(Activity.RESULT_OK, returnIntent);
                 } catch (Exception e) {

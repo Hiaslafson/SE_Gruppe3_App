@@ -1,4 +1,4 @@
-package com.example.gruppe3.myapplication;
+package com.example.gruppe3.myapplication.Requests;
 
 import android.os.AsyncTask;
 import android.os.Looper;

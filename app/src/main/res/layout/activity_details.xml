@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/coordinatorLayout"
-    tools:context="com.example.gruppe3.myapplication.DetailActivity">
+    tools:context="com.example.gruppe3.myapplication.ActivityController.DetailActivity">
 
     <ListView
         android:id="@+id/lv_matches"

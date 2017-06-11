@@ -1,4 +1,4 @@
-package com.example.gruppe3.myapplication;
+package com.example.gruppe3.myapplication.ActivityController;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -7,9 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,6 +15,9 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.example.gruppe3.myapplication.Requests.GetJson;
+import com.example.gruppe3.myapplication.Requests.PostJson;
+import com.example.gruppe3.myapplication.R;
 import com.example.gruppe3.myapplication.eventclasses.EventList;
 import com.example.gruppe3.myapplication.eventclasses.Match;
 import com.example.gruppe3.myapplication.eventclasses.Matches;
@@ -26,10 +27,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import static com.example.gruppe3.myapplication.MainActivity.myIP;
+import static com.example.gruppe3.myapplication.ActivityController.MainActivity.myIP;
 import static com.example.gruppe3.myapplication.eventclasses.InOut.jsonStringToEventList;
 import static com.example.gruppe3.myapplication.eventclasses.InOut.printTextSnackbar;
 
@@ -63,7 +63,6 @@ public class DetailActivity extends AppCompatActivity {
             value = ""; // or other values
             if(b != null)
                 value = b.getString("id");
-
 
             GetDetails();
 
