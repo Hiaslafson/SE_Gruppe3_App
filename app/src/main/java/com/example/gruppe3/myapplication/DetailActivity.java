@@ -22,10 +22,14 @@ import com.example.gruppe3.myapplication.eventclasses.Match;
 import com.example.gruppe3.myapplication.eventclasses.Matches;
 import com.example.gruppe3.myapplication.eventclasses.SportsEvent;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.example.gruppe3.myapplication.MainActivity.myIP;
 import static com.example.gruppe3.myapplication.eventclasses.InOut.jsonStringToEventList;
 import static com.example.gruppe3.myapplication.eventclasses.InOut.printTextSnackbar;
 
@@ -38,7 +42,9 @@ public class DetailActivity extends AppCompatActivity {
     private List<String> matchList = new ArrayList<>();
     private Matches matches = new Matches();
     private Activity a = this;
-    private SportsEvent event = new SportsEvent(); //TODO only temp
+    private SportsEvent event = new SportsEvent();
+    private String myUrl =  myIP + "/events";
+    private String value = ""; // event id value
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,38 +52,6 @@ public class DetailActivity extends AppCompatActivity {
         try {
             super.onCreate(savedInstanceState);
             setContentView(R.layout.activity_details);
-            //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar2);
-            //setSupportActionBar(toolbar);
-
-            Bundle b = getIntent().getExtras();
-            String value = ""; // or other values
-            if(b != null)
-                value = b.getString("id");
-
-            //TODO liest es nochmals aus, ev mitgeben ------------------------------
-            String myUrl = "http://192.168.0.2:3000/events";
-            String result;
-            //Instantiate new instance of our class
-            GetJson getRequest = new GetJson();
-            try {
-                result = getRequest.execute(myUrl).get();
-                EventList events = jsonStringToEventList(result);
-
-                for (SportsEvent e : events.getSportsEventList()) {
-                    if (e.getEvendId().equalsIgnoreCase(value)) {
-                        event = e;
-                        break;
-                    }
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
-                printTextSnackbar(coordinatorLayout, "Error: " + e.getMessage());
-            }
-
-
-            //------------------------------
 
             // Get reference of widgets from XML layout
             final ListView lv = (ListView) findViewById(R.id.lv_matches);
@@ -85,15 +59,13 @@ public class DetailActivity extends AppCompatActivity {
             // Create a List from String Array elements
             matchList = new ArrayList<String>();
 
-            for (Match m : event.getEventMatches().getMatches()) {
-                if (event.getEventType().contains("Fußball")) {
-                    matchList.add(m.getTeam1() + " vs. " + m.getTeam2() + ", Ergebnis: " + m.getRes1() + " : " + m.getRes2());
-                }
-                else {
-                    matchList.add("Fahrer: " + m.getTeam1() + ", Startnummer: " + m.getRes1() + " Fahrzeit: " +  " : " + m.getTeam2());
-                }
-                matches.add(m);
-            }
+            Bundle b = getIntent().getExtras();
+            value = ""; // or other values
+            if(b != null)
+                value = b.getString("id");
+
+
+            GetDetails();
 
             // Create an ArrayAdapter from List
             arrayAdapter = new ArrayAdapter<String>
@@ -146,7 +118,7 @@ public class DetailActivity extends AppCompatActivity {
             lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
                 @Override
-                public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
+                public void onItemClick(AdapterView<?> arg0, View arg1, final int position, long arg3) {
                     Object o = lv.getItemAtPosition(position);
 
                     String mid = matches.getMatches().get(position).getMatchId();
@@ -158,7 +130,32 @@ public class DetailActivity extends AppCompatActivity {
                                 public void onClick(DialogInterface dialog, int id) {
                                     // Handle Ok
                                     System.out.print("delete");
-                                    //TODO delete match
+
+                                    JSONObject object = new JSONObject();
+                                    try {
+                                        object.put("eventId", event.getEvendId());
+                                        object.put("team1", matches.getMatches().get(position).getTeam1());
+                                        object.put("team2",matches.getMatches().get(position).getTeam2());
+                                        object.put("result1", matches.getMatches().get(position).getRes1());
+                                        object.put("result2", matches.getMatches().get(position).getRes2());
+
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+
+                                    String message = object.toString();
+                                    PostJson post = new PostJson();
+                                    String stringUrl =  myIP +"/events/" + matches.getMatches().get(position).getMatchId() + "/deleteMatches";
+                                    try {
+                                        String result;
+                                        result = post.execute(stringUrl, message).get();
+                                        GetDetails();
+
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                        CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
+                                        printTextSnackbar(coordinatorLayout, "Error: " + e.getMessage());
+                                    }
                                 }
                             })
                             .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -176,6 +173,47 @@ public class DetailActivity extends AppCompatActivity {
             e.printStackTrace();
             CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
             printTextSnackbar(coordinatorLayout, "Error: " + e.getMessage());
+        }
+    }
+
+    private void GetDetails() {
+        String result;
+        //Instantiate new instance of our class
+        GetJson getRequest = new GetJson();
+        try {
+            result = getRequest.execute(myUrl).get();
+            EventList events = jsonStringToEventList(result);
+
+            for (SportsEvent e : events.getSportsEventList()) {
+                if (e.getEvendId().equalsIgnoreCase(value)) {
+                    event = e;
+                    break;
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
+            printTextSnackbar(coordinatorLayout, "Error: " + e.getMessage());
+        }
+
+        //------------------------------
+        matchList.clear();
+
+        for (Match m : event.getEventMatches().getMatches()) {
+            if (event.getEventType().contains("Fußball")) {
+                matchList.add(m.getTeam1() + " vs. " + m.getTeam2() + ", Ergebnis: " + m.getRes1() + " : " + m.getRes2());
+            }
+            else {
+                matchList.add("Fahrer: " + m.getTeam1() + ", Startnummer: " + m.getRes1() + " Fahrzeit: " +  " : " + m.getTeam2());
+            }
+            matches.add(m);
+        }
+
+        try {
+            arrayAdapter.notifyDataSetChanged();
+        } catch (Exception e) {
+            //Nothing to do
         }
     }
 
@@ -201,10 +239,6 @@ public class DetailActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    //public void setListAdapter(ArrayAdapter<String> listAdapter) {
-     //   this.adapter = listAdapter;
-    //}
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
@@ -221,7 +255,31 @@ public class DetailActivity extends AppCompatActivity {
                         matchList.add("Fahrer: " + m.getTeam1() + ", Startnummer: " + m.getRes1() + " Fahrzeit: " +  " : " + m.getTeam2());
                     }
 
-                    //TODO add match to DB
+                    JSONObject object = new JSONObject();
+                    try {
+                        object.put("team1", m.getTeam1());
+                        object.put("team2", m.getTeam2());
+                        object.put("result1", m.getRes1());
+                        object.put("result2", m.getRes2());
+
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    String message = object.toString();
+                    PostJson post = new PostJson();
+                    String stringUrl =  myIP + "/events/" + event.getEvendId() + "/matches" ;
+                    try {
+                        String result;
+                        result = post.execute(stringUrl, message).get();
+                        GetDetails();
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
+                        printTextSnackbar(coordinatorLayout, "Error: " + e.getMessage());
+                    }
 
                     arrayAdapter.notifyDataSetChanged();
                 } catch (Exception e ) {
